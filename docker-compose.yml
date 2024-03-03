@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+  api-postgrest:
+    image: postgrest/postgrest
+    ports:
+      - 3000:3000
+    depends_on:
+      - database-postgres
+    environment:
+      - PGRST_DB_URI=postgres://${DATABASE_USER}:${DATABASE_PASSWORD}@database-postgres:5432/${DATABASE_NAME}
+      - PGRST_DB_SCHEMA=${PGRST_DB_SCHEMA}
+      # https://postgrest.org/en/v12/references/configuration.html#db-anon-role
+      - PGRST_DB_ANON_ROLE=${PGRST_DB_ANON_ROLE}
+
+  database-postgres:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${DATABASE_USER} #postgres
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD} #postgres
+      - POSTGRES_DB=${DATABASE_NAME} #postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./initdb.d:/docker-entrypoint-initdb.d
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8090:8080
+
+volumes:
+  pgdata:
