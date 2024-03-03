@@ -35,7 +35,7 @@ create or replace function demo.html_thing(demo.things) returns text as $$
 $$ language sql stable;
 
 create or replace function demo.html_all_things() returns "text/html" as $$
-  select coalesce('<ul id="todo-list" role="list">'|| string_agg(demo.html_thing(t), '' order by t.id) || '</ul>')
+  select coalesce('<ul role="list">'|| string_agg(demo.html_thing(t), '' order by t.id) || '</ul>')
   from demo.things t;
 
 $$ language sql;
@@ -52,11 +52,8 @@ select $html$
     </head>
     <body hx-headers='{"accept": "text/html"}'>
       <div>
-        <div>
           <h5>things</h5>
-          <div hx-get="/rpc/html_all_things" hx-trigger="every 1s" hx-target="this">
-          <div>
-        </div>
+          <div hx-get="/rpc/html_all_things" hx-trigger="every 1s" hx-target="this"></div>
       </div>
     </body>
   </html>
